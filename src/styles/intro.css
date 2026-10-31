@@ -1,0 +1,301 @@
+/* ── Intro curtain ───────────────────────────────────────────────────────
+   First visit per session only: `html.intro` is set by the head script in
+   app/layout.tsx, plus `html.loader-dots` when the dot-portrait look is picked.
+
+   Logo look, pure CSS (s):
+     0.10–1.35  S stroke draws on        1.05  lime dot pops
+     0.75–1.65  wordmark rises
+
+   Dot-portrait look: src/client/intro.ts flies the dots in, adds `intro-formed`
+   (wordmark rises) and then `intro-exit`; until then everything below is held
+   paused, so the exit runs from that cue instead of from page load.
+
+   Shared exit, relative to --exit-at (1.7s for the logo look):
+     +0.00–0.75  navy wash rises          +0.74  paper drops, scroll unlocks
+     +0.75–1.60  wash peels away upward   +0.80  header + hero enter (--intro-wait) */
+
+.intro-curtain {
+  display: none;
+}
+
+html.intro {
+  --exit-at: 1.7s;
+  --intro-wait: calc(var(--exit-at) + 0.8s);
+}
+
+html.intro.loader-dots {
+  --exit-at: 0s;
+}
+
+html.intro-lock,
+html.intro-lock body {
+  overflow: hidden;
+}
+
+.intro .intro-curtain {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  animation: intro-gone 0s linear calc(var(--exit-at) + 1.6s) forwards;
+}
+
+.intro-curtain__paper {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--ivory);
+  animation: intro-gone 0s linear calc(var(--exit-at) + 0.74s) forwards;
+}
+
+.intro-curtain__lockup {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: clamp(0.75rem, 2vh, 1.25rem);
+  animation: intro-settle 0.5s cubic-bezier(0.76, 0, 0.24, 1) calc(var(--exit-at) + 0.05s) forwards;
+}
+
+.intro-curtain__mark {
+  width: clamp(4.25rem, 12vw, 5.75rem);
+  height: auto;
+  overflow: visible;
+  animation: intro-fade 0.15s linear 0.1s backwards;
+}
+
+.intro-curtain__s {
+  fill: none;
+  stroke: var(--ink-navy);
+  stroke-width: 4.6;
+  stroke-linecap: round;
+  stroke-dasharray: 1 1;
+  animation: intro-draw 1.25s cubic-bezier(0.76, 0, 0.24, 1) 0.1s backwards;
+}
+
+.intro-curtain__dot {
+  fill: var(--lime);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: intro-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 1.05s backwards;
+}
+
+.intro-curtain__word {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  color: var(--text);
+}
+
+.intro-curtain__line {
+  display: inline-block;
+  overflow: hidden;
+  padding-bottom: 0.12em; /* keeps descenders inside the mask */
+}
+
+.intro-curtain__line > span {
+  display: inline-block;
+  animation: line-up 0.8s var(--ease-out) 0.75s backwards;
+}
+
+.intro-curtain__line + .intro-curtain__line > span {
+  animation-delay: 0.85s;
+}
+
+.intro-curtain .brand__mark {
+  font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.25rem);
+}
+
+.intro-curtain .brand__by {
+  font-size: clamp(0.95rem, 0.85rem + 0.4vw, 1.15rem);
+}
+
+.intro-curtain__wash {
+  position: absolute;
+  inset: 0;
+  background: var(--ink-navy);
+  clip-path: ellipse(140% 0% at 50% 100%);
+  animation:
+    intro-wash-in 0.75s cubic-bezier(0.76, 0, 0.24, 1) var(--exit-at) forwards,
+    intro-wash-out 0.85s cubic-bezier(0.76, 0, 0.24, 1) calc(var(--exit-at) + 0.75s) forwards;
+}
+
+/* Dot-portrait look: the canvas spans the paper; the empty frame in the lockup marks where the face lands. */
+.intro-curtain__dots,
+.intro-curtain__portrait {
+  display: none;
+}
+
+.loader-dots .intro-curtain__mark {
+  display: none;
+}
+
+.loader-dots .intro-curtain__dots {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: intro-settle 0.5s cubic-bezier(0.76, 0, 0.24, 1) calc(var(--exit-at) + 0.05s) forwards;
+}
+
+.loader-dots .intro-curtain__portrait {
+  display: block;
+  width: min(72vw, 44svh);
+  aspect-ratio: 0.758;
+}
+
+.loader-dots .intro-curtain__line > span {
+  animation-delay: 0s;
+}
+
+.loader-dots .intro-curtain__line + .intro-curtain__line > span {
+  animation-delay: 0.1s;
+}
+
+html.intro.loader-dots:not(.intro-formed) .intro-curtain__line > span,
+html.intro.loader-dots:not(.intro-exit)
+  :is(
+    .intro-curtain,
+    .intro-curtain__paper,
+    .intro-curtain__lockup,
+    .intro-curtain__dots,
+    .intro-curtain__wash,
+    .site-header__inner > *,
+    .site-nav li,
+    .hero__intro [data-intro],
+    .hero__title .line > span
+  ) {
+  animation-play-state: paused;
+}
+
+/* Header drops in once the wash clears, brand first, then the nav left to right. */
+.intro .site-header__inner > * {
+  animation: intro-drop 1s var(--ease-out) var(--intro-wait) backwards;
+}
+
+.intro .site-nav {
+  animation: none;
+}
+
+.intro .site-nav li {
+  animation: intro-drop 1s var(--ease-out) backwards;
+}
+
+.intro .site-nav li:nth-child(1) { animation-delay: calc(var(--intro-wait) + 0.06s); }
+.intro .site-nav li:nth-child(2) { animation-delay: calc(var(--intro-wait) + 0.12s); }
+.intro .site-nav li:nth-child(3) { animation-delay: calc(var(--intro-wait) + 0.18s); }
+.intro .site-nav li:nth-child(4) { animation-delay: calc(var(--intro-wait) + 0.24s); }
+.intro .site-nav li:nth-child(5) { animation-delay: calc(var(--intro-wait) + 0.3s); }
+.intro .site-nav li:nth-child(6) { animation-delay: calc(var(--intro-wait) + 0.36s); }
+.intro .site-header__cta { animation-delay: calc(var(--intro-wait) + 0.42s); }
+
+/* ── Loader toggle: compare the two intros (switching replays it) ── */
+.loader-toggle {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: 0 10px 30px -12px rgb(17 29 50 / 0.35);
+  font-size: 0.8125rem;
+  line-height: 1;
+}
+
+.loader-toggle__label {
+  padding-inline: 0.6rem 0.3rem;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.loader-toggle__opt {
+  padding: 0.55rem 0.85rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease),
+    color 0.2s var(--ease);
+}
+
+.loader-toggle__opt:hover {
+  background: var(--mist);
+}
+
+.loader-toggle__opt:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+html:not(.loader-dots) .loader-toggle__opt[data-loader-pick='logo'],
+.loader-dots .loader-toggle__opt[data-loader-pick='dots'] {
+  background: var(--ink-navy);
+  color: var(--on-dark);
+}
+
+@keyframes intro-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@keyframes intro-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes intro-pop {
+  from {
+    transform: scale(0);
+  }
+}
+
+@keyframes intro-settle {
+  to {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@keyframes intro-wash-in {
+  to {
+    clip-path: ellipse(140% 140% at 50% 100%);
+  }
+}
+
+@keyframes intro-wash-out {
+  from {
+    clip-path: ellipse(140% 140% at 50% 0%);
+  }
+  to {
+    clip-path: ellipse(140% 0% at 50% 0%);
+  }
+}
+
+@keyframes intro-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-140%);
+  }
+}
+
+@keyframes intro-gone {
+  to {
+    visibility: hidden;
+  }
+}

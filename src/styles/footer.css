@@ -1,0 +1,255 @@
+/* ── Footer (lime) ───────────────────────────────────────────────────────
+   Sits under the navy contact section: lime field, navy type, faint SV
+   monogram pattern, two-tone wordmark cropped by the bottom edge. */
+
+.sv-footer {
+  --fg: var(--ink-navy);
+  --fg-2: rgb(17 29 50 / 0.78);
+  --rule: rgb(17 29 50 / 0.2);
+  position: relative;
+  overflow: hidden;
+  background: var(--lime);
+  color: var(--fg);
+  padding-top: clamp(3rem, 2rem + 3vw, 5rem);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.sv-footer__pattern {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sv-footer__pattern text {
+  font-family: var(--font);
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  fill: rgb(17 29 50 / 0.045);
+}
+
+.sv-footer__inner {
+  position: relative;
+  container-type: inline-size;
+}
+
+.sv-footer__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr);
+  gap: 3rem clamp(2rem, 5vw, 6rem);
+}
+
+/* Pitch */
+
+.sv-footer__logo {
+  display: grid;
+  place-items: center;
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink-navy);
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  box-shadow: 0 6px 18px rgb(17 29 50 / 0.12);
+}
+
+.sv-footer__title {
+  margin: 1.75rem 0 0;
+  max-width: 17ch;
+  font-size: clamp(1.75rem, 1.15rem + 1.7vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: var(--track-head);
+  text-wrap: balance;
+}
+
+.sv-footer__lede {
+  margin: 1rem 0 0;
+  max-width: 40ch;
+  color: var(--fg-2);
+}
+
+.sv-footer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.75rem;
+}
+
+.sv-footer__cta,
+.sv-footer__mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  height: 3rem;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 0.25s var(--ease),
+    border-color 0.25s var(--ease),
+    color 0.25s var(--ease);
+}
+
+.sv-footer__cta {
+  padding: 0 0.4rem 0 1.4rem;
+  background: var(--ink-navy);
+  color: var(--ivory);
+}
+
+.sv-footer__cta:hover {
+  background: var(--navy);
+}
+
+.sv-footer__cta-icon {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--ivory);
+  color: var(--ink-navy);
+}
+
+.sv-footer__mail {
+  padding: 0 1.3rem;
+  border: 1.5px solid var(--rule);
+  color: var(--fg);
+}
+
+.sv-footer__mail:hover {
+  border-color: var(--ink-navy);
+  background: rgb(17 29 50 / 0.05);
+}
+
+/* Link columns */
+
+.sv-footer__cols {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  justify-content: space-between;
+  gap: 2.5rem clamp(1.5rem, 3vw, 3rem);
+  align-content: start;
+}
+
+.sv-footer__head {
+  margin: 0 0 1rem;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+
+.sv-footer__head--gap {
+  margin-top: 2.5rem;
+}
+
+.sv-footer__col ul {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--fg-2);
+}
+
+.sv-footer__col address {
+  font-style: normal;
+  color: var(--fg-2);
+}
+
+.sv-footer__col address strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.sv-footer__col a,
+.sv-footer__bottom a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--fg);
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1.5px no-repeat;
+  transition: background-size 0.3s var(--ease-out);
+}
+
+.sv-footer__col a:hover,
+.sv-footer__bottom a:hover {
+  background-size: 100% 1.5px;
+}
+
+.sv-footer a:focus-visible {
+  outline: 2px solid var(--ink-navy);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Bottom bar */
+
+.sv-footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.8125rem;
+  color: var(--fg-2);
+}
+
+.sv-footer__bottom-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.75rem;
+}
+
+/* Wordmark: sized to the footer width, bottom of the letters cropped. */
+
+.sv-footer__wordmark {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin: clamp(2rem, 1.5rem + 2vw, 3.5rem) 0 -0.17em;
+  font-size: 18cqi;
+  font-weight: 700;
+  line-height: 0.8;
+  letter-spacing: -0.065em;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.sv-footer__wordmark span:first-child {
+  color: var(--paper);
+}
+
+.sv-footer__wordmark span:last-child {
+  color: var(--ink-navy);
+}
+
+@media (max-width: 1024px) {
+  .sv-footer__top {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .sv-footer__cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sv-footer__cols > :last-child {
+    grid-column: 1 / -1;
+  }
+
+  .sv-footer__bottom {
+    flex-direction: column;
+  }
+}

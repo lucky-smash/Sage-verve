@@ -1,0 +1,8 @@
+node_modules
+.next
+next-env.d.ts
+*.tsbuildinfo
+.playwright-mcp
+
+# internal research notes, not for the public repo
+sageverve-rohit-johar-brief.md
