@@ -61,9 +61,9 @@ export const viewport: Viewport = {
 };
 
 /* Plays the intro curtain once per tab session (append ?intro to replay); never for reduced motion.
-   `loader-dots` picks the dot-portrait look (set by the on-page toggle). src/client/intro.ts cues the
-   exit and lifts the scroll lock; the timeout is a safety net if the client bundle never runs. */
-const headScript = `var d=document.documentElement;d.classList.add('js');try{var dots=localStorage.getItem('sv-loader')==='dots';if(dots)d.classList.add('loader-dots');if((!sessionStorage.getItem('sv-intro')||/[?&]intro\\b/.test(location.search))&&!matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('intro','intro-lock');sessionStorage.setItem('sv-intro','1');if(dots)setTimeout(function(){d.classList.add('intro-formed','intro-exit')},8000);setTimeout(function(){d.classList.remove('intro-lock')},dots?9000:4500)}}catch(e){}`;
+   `loader-dots` (the dot-portrait look) is the default; the on-page toggle can switch to the logo. src/client/intro.ts
+   cues the exit and lifts the scroll lock; the timeout is a safety net if the client bundle never runs. */
+const headScript = `var d=document.documentElement;d.classList.add('js');try{var dots=localStorage.getItem('sv-look')!=='logo';if(dots)d.classList.add('loader-dots');if((!sessionStorage.getItem('sv-intro')||/[?&]intro\\b/.test(location.search))&&!matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('intro','intro-lock');sessionStorage.setItem('sv-intro','1');if(dots)setTimeout(function(){d.classList.add('intro-formed','intro-exit')},8000);setTimeout(function(){d.classList.remove('intro-lock')},dots?9000:4500)}}catch(e){}`;
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

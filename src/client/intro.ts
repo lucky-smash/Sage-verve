@@ -1,8 +1,8 @@
 /* First-visit intro curtain (markup + CSS in src/components/IntroCurtain.tsx and src/styles/intro.css).
    Two looks, picked with the on-page toggle and remembered in localStorage:
-   - "logo": the S mark draws itself; pure CSS, nothing to do here but release the scroll lock.
-   - "dots": every dot is a person; they fly in and settle into a halftone portrait of Rohit, then
-     this module cues the shared navy-wash exit (`intro-exit`), which the CSS holds paused until then. */
+   - "dots" (default): every dot is a person; they fly in and settle into a halftone portrait of Rohit, then
+     this module cues the shared navy-wash exit (`intro-exit`), which the CSS holds paused until then.
+   - "logo": the S mark draws itself; pure CSS, nothing to do here but release the scroll lock. */
 
 const PORTRAIT_SRC = '/img/rohit-johar.png';
 /* Head-and-shoulders crop of the photo (fractions of the image), so the face fills the frame. */
@@ -176,7 +176,7 @@ export function mountIntro(): () => void {
   const onPick = (e: Event) => {
     const pick = (e.currentTarget as HTMLButtonElement).dataset.loaderPick;
     try {
-      localStorage.setItem('sv-loader', pick === 'dots' ? 'dots' : 'logo');
+      localStorage.setItem('sv-look', pick === 'logo' ? 'logo' : 'dots');
       sessionStorage.removeItem('sv-intro');
     } catch {}
     window.scrollTo({ top: 0, behavior: 'instant' });
