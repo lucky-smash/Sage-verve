@@ -96,7 +96,7 @@ html.intro-lock body {
 
 .intro-curtain__line > span {
   display: inline-block;
-  animation: line-up 0.8s var(--ease-out) 0.75s backwards;
+  animation: intro-word-up 0.8s var(--ease-out) 0.75s backwards;
 }
 
 .intro-curtain__line + .intro-curtain__line > span {
@@ -324,6 +324,16 @@ html:not(.loader-dots) .loader-toggle__opt[data-loader-pick='logo'],
 
 @keyframes intro-gone {
   to {
+    visibility: hidden;
+  }
+}
+
+/* line-up, but hidden at its first frame: the mask's descender padding (and the taller line box
+   around the smaller byline) leaves glyph tops peeking out while the dots look holds the wordmark
+   paused there. Visibility flips to visible as soon as the rise starts. */
+@keyframes intro-word-up {
+  from {
+    transform: translateY(105%);
     visibility: hidden;
   }
 }
