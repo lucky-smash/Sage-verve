@@ -856,7 +856,9 @@ export function createOffice(mount: HTMLElement, opts: Options): OfficeScene {
     const el = 0.68 + 0.12 * k - py * 0.04;
     // Islands spread wider when fragmented; pull in once they lock together, ease back out for the skyline.
     const spread = 1 - smooth(range(sv, 0.05, 0.9));
-    const fit = aspect < 1 ? Math.pow(1 / aspect, 1.05) : 1;
+    // Back off for tall frames (phones pull back a little sooner, the office is wider than it is deep).
+    const snug = compact ? 1.1 : 1;
+    const fit = aspect < snug ? Math.pow(snug / aspect, 1.05) : 1;
     const late = smooth(range(sv, 2, 2.8));
     const dist = (compact ? 35 : 32.5) * fit * (1 + 0.4 * spread + 0.1 * late);
     target.set(0.3, 0.2 + 1.1 * late, -0.1 - 1.5 * late);

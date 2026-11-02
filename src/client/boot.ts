@@ -11,7 +11,7 @@ export function boot(): () => void {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const root = document.documentElement;
   root.classList.add('is-booted');
-  cleanups.push(() => root.classList.remove('is-booted'));
+  cleanups.push(() => root.classList.remove('is-booted', 'has-scrolled'));
 
   cleanups.push(mountIntro());
 
@@ -22,6 +22,7 @@ export function boot(): () => void {
   const header = document.querySelector<HTMLElement>('[data-header]');
   const darkZones = Array.from(document.querySelectorAll<HTMLElement>('.section--dark'));
   const onScrollHeader = () => {
+    root.classList.toggle('has-scrolled', window.scrollY > 12);
     if (!header) return;
     header.classList.toggle('is-scrolled', window.scrollY > 12);
     const probe = header.offsetHeight * 0.5;

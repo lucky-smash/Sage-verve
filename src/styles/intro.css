@@ -241,6 +241,34 @@ html.intro.loader-dots:not(.intro-exit)
   outline-offset: 2px;
 }
 
+/* Phones: smaller, and tucked away once the page scrolls so it never sits on the copy. */
+@media (max-width: 900px) {
+  .loader-toggle {
+    right: 0.75rem;
+    bottom: 0.75rem;
+    padding: 0.2rem;
+    font-size: 0.75rem;
+    transition:
+      opacity 0.3s var(--ease),
+      translate 0.4s var(--ease-out);
+  }
+
+  .loader-toggle__label {
+    display: none;
+  }
+
+  .loader-toggle__opt {
+    padding: 0.5rem 0.7rem;
+    white-space: nowrap;
+  }
+
+  .has-scrolled .loader-toggle {
+    opacity: 0;
+    translate: 0 150%;
+    pointer-events: none;
+  }
+}
+
 html:not(.loader-dots) .loader-toggle__opt[data-loader-pick='logo'],
 .loader-dots .loader-toggle__opt[data-loader-pick='dots'] {
   background: var(--ink-navy);

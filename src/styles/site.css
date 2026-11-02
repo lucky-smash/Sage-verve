@@ -3082,56 +3082,123 @@ a:hover .arrow--diag {
 }
 
 @media (max-width: 900px) {
-  /* Hero: the scene sticks at the top; the story scrolls underneath it. */
+  /* Hero: the headline gets the first screen to itself. Then the scene pins full screen and the four
+     stages play out in a caption panel under it (src/client/hero.ts) before the next section arrives.
+     The scene, the captions and a spacer (the scroll length) all share grid row 2. */
+  .hero {
+    --cap-h: clamp(13rem, 39svh, 19rem);
+  }
+
   .hero__grid {
     grid-template-columns: minmax(0, 1fr);
     padding-inline: var(--gutter);
   }
 
-  .hero__scene {
+  .hero__grid::after {
+    content: '';
     grid-column: 1;
-    grid-row: 1;
-    top: var(--header-h);
-    height: 46svh;
-    min-height: 18rem;
-    margin-inline: calc(var(--gutter) * -1);
-    margin-top: var(--header-h);
-    z-index: 3;
-    background: var(--ivory);
-    box-shadow: 0 1px 0 var(--line);
-  }
-
-  .hero__scene::before {
-    inset: 0;
+    grid-row: 2;
+    height: 360svh;
   }
 
   .hero__intro {
+    grid-row: 1;
+    min-height: 100svh;
+    padding-block: calc(var(--header-h) + 1.5rem) 2.5rem;
+  }
+
+  .hero__scene {
+    grid-column: 1;
     grid-row: 2;
-    min-height: auto;
-    padding-block: 2rem 3.5rem;
+    top: var(--header-h);
+    height: calc(100svh - var(--header-h));
+    min-height: 0;
+    margin-inline: calc(var(--gutter) * -1);
+    z-index: 1;
+    background: var(--ivory);
   }
 
-  .hero__step {
-    min-height: 50svh;
-    max-width: none;
-    padding-block: 2rem;
-    opacity: 0.3;
+  .hero__scene::before {
+    inset: 0 0 var(--cap-h);
   }
 
-  .hero__step:last-of-type {
-    min-height: 62svh;
+  /* Hairline between the scene and the caption panel. */
+  .hero__scene::after {
+    content: '';
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: var(--cap-h);
+    height: 1px;
+    background: var(--line);
+  }
+
+  .hero__canvas,
+  .hero__loader {
+    inset: 0 0 var(--cap-h);
+  }
+
+  .hero__canvas {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .hero-fallback {
+    inset: 1rem var(--gutter) calc(var(--cap-h) + 4.5rem);
+    width: auto;
+    height: auto;
   }
 
   .hud {
     left: var(--gutter);
     right: auto;
-    bottom: 1rem;
+    bottom: calc(var(--cap-h) + 1rem);
     justify-items: start;
   }
 
+  /* Captions: all four stack in the panel, the current one fades up. */
+  .hero__step {
+    grid-row: 2;
+    align-self: start;
+    position: sticky;
+    top: calc(100svh - var(--cap-h));
+    height: var(--cap-h);
+    min-height: 0;
+    margin-top: calc(100svh - var(--header-h) - var(--cap-h));
+    max-width: 36rem;
+    justify-content: flex-start;
+    gap: 0.6rem;
+    padding-block: 1.25rem 1rem;
+    opacity: 0;
+    transform: translateY(0.75rem);
+    transition:
+      opacity 0.45s var(--ease),
+      transform 0.6s var(--ease-out);
+    pointer-events: none;
+  }
 
-  .scroll-cue {
+  .hero__step:last-of-type {
+    min-height: 0;
+  }
+
+  .hero__step.is-active {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  /* The HUD above already names the stage. */
+  .hero__step-num {
     display: none;
+  }
+
+  .hero__step-title {
+    font-size: clamp(1.35rem, 0.9rem + 2.6vw, 2.5rem);
+  }
+
+  .hero__step-body {
+    font-size: clamp(0.9375rem, 0.85rem + 0.5vw, 1.125rem);
+    line-height: 1.5;
   }
 
   .split-head > div,
@@ -3348,6 +3415,39 @@ a:hover .arrow--diag {
 
 }
 
+/* Phones on their side: scene on the left, caption beside it. */
+@media (max-width: 900px) and (min-aspect-ratio: 5 / 4) {
+  .hero {
+    --cap-h: 0px;
+  }
+
+  .hero__scene::after {
+    display: none;
+  }
+
+  .hero__canvas,
+  .hero__loader {
+    right: 44%;
+  }
+
+  .hero-fallback {
+    inset: 1rem 46% 4rem var(--gutter);
+  }
+
+  .hero__step {
+    top: var(--header-h);
+    width: 42%;
+    height: calc(100svh - var(--header-h));
+    margin-top: 0;
+    justify-self: end;
+    justify-content: center;
+  }
+
+  .hero__intro {
+    padding-top: calc(var(--header-h) + 1rem);
+  }
+}
+
 @media (max-width: 640px) {
   :root {
     --section-y: 4.5rem;
@@ -3361,12 +3461,12 @@ a:hover .arrow--diag {
     font-size: 1.15rem;
   }
 
-  .hero__scene {
-    height: 42svh;
+  .hero__title {
+    font-size: clamp(2.1rem, 11.4cqi, 4rem);
   }
 
-  .hero__title {
-    font-size: clamp(2.25rem, 10.6cqi, 4rem);
+  .hero__sub {
+    font-size: 1.0625rem;
   }
 
   .byline {
@@ -3501,6 +3601,27 @@ a:hover .arrow--diag {
     padding-left: 0;
   }
 
+}
+
+/* Narrow phones: the byline drops under the wordmark so the menu button keeps its room. */
+@media (max-width: 400px) {
+  .site-header .brand__text {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+  }
+
+  .site-header .brand__by {
+    font-size: 0.75rem;
+  }
+
+  .byline {
+    padding: 0.5rem 0.75rem 0.5rem 0.5rem;
+  }
+
+  .byline__photo {
+    width: 3.25rem;
+  }
 }
 
 /* ── Reduced motion ──────────────────────────────────────────────────── */

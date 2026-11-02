@@ -14,6 +14,8 @@ function hasWebGL() {
 /**
  * The hero's scroll story. Stage text blocks scroll past a sticky 3D scene; the scene's state s ∈ [0, 3]
  * is interpolated between the centres of the four stage blocks, so text and scene are always in step.
+ * On phones the scene pins full screen instead, the stage captions stack in a panel under it, and s follows
+ * the scroll through that pinned stretch (each stage holds, then morphs into the next).
  * Three.js is loaded lazily, paused when the hero is off screen, and replaced by a static SVG without WebGL.
  */
 export function mountHero(section: HTMLElement): () => void {
@@ -35,18 +37,18 @@ export function mountHero(section: HTMLElement): () => void {
   let visible = true;
   let sv = 0;
   let anchors: number[] = [];
+  let pin = [0, 1];
   let lastStage = -1;
   let lastActive = -1;
 
-  // The reading line: the viewport centre, or on phones (scene stuck on top) the centre of the strip below it.
-  const focusLine = () => {
-    const vh = window.innerHeight;
-    if (!stacked.matches) return vh * 0.5;
-    const bottom = sceneEl.getBoundingClientRect().bottom;
-    return bottom + (vh - bottom) * 0.45;
-  };
-
   const measure = () => {
+    if (stacked.matches) {
+      const top = parseFloat(getComputedStyle(sceneEl).top) || 0;
+      const introBottom = steps[0].getBoundingClientRect().bottom + window.scrollY;
+      const sectionBottom = section.getBoundingClientRect().bottom + window.scrollY;
+      pin = [introBottom - top, Math.max(introBottom - top + 1, sectionBottom - top - sceneEl.offsetHeight)];
+      return;
+    }
     anchors = steps.slice(1).map((el) => {
       const r = el.getBoundingClientRect();
       return r.top + window.scrollY + r.height / 2;
@@ -54,16 +56,24 @@ export function mountHero(section: HTMLElement): () => void {
   };
 
   const update = () => {
-    if (anchors.length < 4) return;
-    const focus = focusLine();
-    const y = window.scrollY + focus;
+    const pinned = stacked.matches;
+    if (!pinned && anchors.length < 4) return;
+    const focus = window.innerHeight * 0.5; // the reading line
     sv = 0;
-    if (y >= anchors[3]) sv = 3;
-    else if (y > anchors[0]) {
-      for (let i = 0; i < 3; i++) {
-        if (y < anchors[i + 1]) {
-          sv = i + (y - anchors[i]) / (anchors[i + 1] - anchors[i]);
-          break;
+    if (pinned) {
+      const u = Math.min(1, Math.max(0, (window.scrollY - pin[0]) / (pin[1] - pin[0]))) * 4;
+      const i = Math.min(3, Math.floor(u));
+      const f = Math.min(1, Math.max(0, (u - i - 0.3) / 0.7));
+      sv = i === 3 ? 3 : i + f * f * (3 - 2 * f);
+    } else {
+      const y = window.scrollY + focus;
+      if (y >= anchors[3]) sv = 3;
+      else if (y > anchors[0]) {
+        for (let i = 0; i < 3; i++) {
+          if (y < anchors[i + 1]) {
+            sv = i + (y - anchors[i]) / (anchors[i + 1] - anchors[i]);
+            break;
+          }
         }
       }
     }
@@ -79,10 +89,10 @@ export function mountHero(section: HTMLElement): () => void {
       sceneEl.classList.toggle('is-moving', sv > 0.35);
     }
 
-    // The text block nearest the viewport centre is the active one.
-    let active = 0;
+    // The text block nearest the viewport centre is the active one (pinned: the caption for the current stage).
+    let active = pinned ? stage + 1 : 0;
     let best = Infinity;
-    steps.forEach((el, i) => {
+    if (!pinned) steps.forEach((el, i) => {
       const r = el.getBoundingClientRect();
       const d = Math.abs(r.top + r.height / 2 - focus);
       if (d < best) {
